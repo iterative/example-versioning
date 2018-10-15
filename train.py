@@ -39,6 +39,8 @@ data/
 ```
 '''
 import numpy as np
+import json
+
 from keras.preprocessing.image import ImageDataGenerator
 from keras.models import Sequential
 from keras.layers import Dropout, Flatten, Dense
@@ -47,7 +49,7 @@ from keras import applications
 # dimensions of our images.
 img_width, img_height = 150, 150
 
-top_model_weights_path = 'bottleneck_fc_model.h5'
+top_model_weights_path = 'model.h5'
 train_data_dir = 'data/train'
 validation_data_dir = 'data/validation'
 nb_train_samples = 1000
@@ -103,10 +105,11 @@ def train_top_model():
     model.compile(optimizer='rmsprop',
                   loss='binary_crossentropy', metrics=['accuracy'])
 
-    model.fit(train_data, train_labels,
+    history = model.fit(train_data, train_labels,
               epochs=epochs,
               batch_size=batch_size,
               validation_data=(validation_data, validation_labels))
+    json.dump(history.history, open("metrics.json",'w'))
     model.save_weights(top_model_weights_path)
 
 
