@@ -40,21 +40,27 @@ data/
 '''
 import numpy as np
 import json
+import sys
+import os
 
 from keras.preprocessing.image import ImageDataGenerator
 from keras.models import Sequential
 from keras.layers import Dropout, Flatten, Dense
 from keras import applications
 
+pathname = os.path.dirname(sys.argv[0])
+path = os.path.abspath(pathname)
+
 # dimensions of our images.
 img_width, img_height = 150, 150
 
 top_model_weights_path = 'model.h5'
-train_data_dir = 'data/train'
-validation_data_dir = 'data/validation'
-nb_train_samples = 1000
+train_data_dir = os.path.join('data', 'train')
+validation_data_dir = os.path.join('data', 'validation')
+cats_train_path = os.path.join(path, train_data_dir, 'cats')
+nb_train_samples = 2 * len([name for name in os.listdir(cats_train_path) if os.path.isfile(os.path.join(cats_train_path, name))])
 nb_validation_samples = 800
-epochs = 50
+epochs = 10
 batch_size = 10
 
 
