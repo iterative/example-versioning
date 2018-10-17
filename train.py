@@ -78,7 +78,7 @@ def save_bottlebeck_features():
         shuffle=False)
     bottleneck_features_train = model.predict_generator(
         generator, nb_train_samples // batch_size)
-    np.save(open('bottleneck_features_train.npy', 'w'),
+    np.save(open('bottleneck_features_train.npy', 'wb'),
             bottleneck_features_train)
 
     generator = datagen.flow_from_directory(
@@ -89,18 +89,18 @@ def save_bottlebeck_features():
         shuffle=False)
     bottleneck_features_validation = model.predict_generator(
         generator, nb_validation_samples // batch_size)
-    np.save(open('bottleneck_features_validation.npy', 'w'),
+    np.save(open('bottleneck_features_validation.npy', 'wb'),
             bottleneck_features_validation)
 
 
 def train_top_model():
-    train_data = np.load(open('bottleneck_features_train.npy'))
+    train_data = np.load(open('bottleneck_features_train.npy', 'rb'))
     train_labels = np.array(
-        [0] * (nb_train_samples / 2) + [1] * (nb_train_samples / 2))
+        [0] * (int(nb_train_samples / 2)) + [1] * (int(nb_train_samples / 2)))
 
-    validation_data = np.load(open('bottleneck_features_validation.npy'))
+    validation_data = np.load(open('bottleneck_features_validation.npy', 'rb'))
     validation_labels = np.array(
-        [0] * (nb_validation_samples / 2) + [1] * (nb_validation_samples / 2))
+        [0] * (int(nb_validation_samples / 2)) + [1] * (int(nb_validation_samples / 2)))
 
     model = Sequential()
     model.add(Flatten(input_shape=train_data.shape[1:]))
@@ -115,7 +115,7 @@ def train_top_model():
               epochs=epochs,
               batch_size=batch_size,
               validation_data=(validation_data, validation_labels))
-    json.dump(history.history, open("metrics.json",'w'))
+    json.dump(history.history, open("metrics.json", 'w'))
     model.save_weights(top_model_weights_path)
 
 
