@@ -11,3 +11,4 @@ cache
 /state-wal
 /state
 /cache
+/tmp

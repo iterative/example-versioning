@@ -43,10 +43,10 @@ import json
 import sys
 import os
 
-from keras.preprocessing.image import ImageDataGenerator
-from keras.models import Sequential
-from keras.layers import Dropout, Flatten, Dense
-from keras import applications
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dropout, Flatten, Dense
+from tensorflow.keras import applications
 
 pathname = os.path.dirname(sys.argv[0])
 path = os.path.abspath(pathname)
