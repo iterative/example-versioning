@@ -1,3 +1,4 @@
-tensorflow==2
 pillow>=5.3,<6
-
+scipy
+tensorflow==2
+tqdm==4
