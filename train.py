@@ -42,11 +42,13 @@ import numpy as np
 import json
 import sys
 import os
+from tqdm import tqdm
 
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dropout, Flatten, Dense
 from tensorflow.keras import applications
+from tensorflow.keras.callbacks import LambdaCallback, CSVLogger
 
 pathname = os.path.dirname(sys.argv[0])
 path = os.path.abspath(pathname)
@@ -111,11 +113,18 @@ def train_top_model():
     model.compile(optimizer='rmsprop',
                   loss='binary_crossentropy', metrics=['accuracy'])
 
-    history = model.fit(train_data, train_labels,
-              epochs=epochs,
-              batch_size=batch_size,
-              validation_data=(validation_data, validation_labels))
-    json.dump(history.history, open("metrics.json", 'w'))
+    with tqdm(total=epochs, unit='epoch') as t:
+        def progress_epoch(_, logs=None):
+            if logs:
+                t.set_postfix(logs, refresh=False)
+            t.update()
+        model.fit(train_data, train_labels,
+                  epochs=epochs,
+                  batch_size=batch_size,
+                  validation_data=(validation_data, validation_labels),
+                  verbose=0,
+                  callbacks=[LambdaCallback(on_epoch_end=progress_epoch),
+                             CSVLogger("metrics.csv")])
     model.save_weights(top_model_weights_path)
 
 
