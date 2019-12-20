@@ -14,8 +14,8 @@ In our setup, it expects:
 - put the dogs pictures index 0-X in data/train/dogs
 - put the dog pictures index 1000-1400 in data/validation/dogs
 
-We have X training examples for each class, and 400 validation examples for each class.
-In summary, this is our directory structure:
+We have X training examples for each class, and 400 validation examples
+for each class. In summary, this is our directory structure:
 ```
 data/
     train/
@@ -39,16 +39,15 @@ data/
 ```
 '''
 import numpy as np
-import json
 import sys
 import os
-from tqdm import tqdm
 
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dropout, Flatten, Dense
 from tensorflow.keras import applications
-from tensorflow.keras.callbacks import LambdaCallback, CSVLogger
+from tensorflow.keras.callbacks import CSVLogger
+from tqdm.keras import TqdmCallback
 
 pathname = os.path.dirname(sys.argv[0])
 path = os.path.abspath(pathname)
@@ -60,7 +59,9 @@ top_model_weights_path = 'model.h5'
 train_data_dir = os.path.join('data', 'train')
 validation_data_dir = os.path.join('data', 'validation')
 cats_train_path = os.path.join(path, train_data_dir, 'cats')
-nb_train_samples = 2 * len([name for name in os.listdir(cats_train_path) if os.path.isfile(os.path.join(cats_train_path, name))])
+nb_train_samples = 2 * len([name for name in os.listdir(cats_train_path)
+                            if os.path.isfile(
+                                os.path.join(cats_train_path, name))])
 nb_validation_samples = 800
 epochs = 10
 batch_size = 10
@@ -102,7 +103,8 @@ def train_top_model():
 
     validation_data = np.load(open('bottleneck_features_validation.npy', 'rb'))
     validation_labels = np.array(
-        [0] * (int(nb_validation_samples / 2)) + [1] * (int(nb_validation_samples / 2)))
+        [0] * (int(nb_validation_samples / 2)) +
+        [1] * (int(nb_validation_samples / 2)))
 
     model = Sequential()
     model.add(Flatten(input_shape=train_data.shape[1:]))
@@ -113,21 +115,14 @@ def train_top_model():
     model.compile(optimizer='rmsprop',
                   loss='binary_crossentropy', metrics=['accuracy'])
 
-    with tqdm(total=epochs, unit='epoch') as t:
-        def progress_epoch(_, logs=None):
-            if logs:
-                t.set_postfix(logs, refresh=False)
-            t.update()
-        model.fit(train_data, train_labels,
-                  epochs=epochs,
-                  batch_size=batch_size,
-                  validation_data=(validation_data, validation_labels),
-                  verbose=0,
-                  callbacks=[LambdaCallback(on_epoch_end=progress_epoch),
-                             CSVLogger("metrics.csv")])
+    model.fit(train_data, train_labels,
+              epochs=epochs,
+              batch_size=batch_size,
+              validation_data=(validation_data, validation_labels),
+              verbose=0,
+              callbacks=[TqdmCallback(), CSVLogger("metrics.csv")])
     model.save_weights(top_model_weights_path)
 
 
 save_bottlebeck_features()
 train_top_model()
-
