@@ -1,0 +1,4 @@
+outs:
+- md5: e1323103c59cfef4f47ab601368768f1
+  size: 4066257
+  path: yolov5n_seg.pt
