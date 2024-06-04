@@ -55,7 +55,7 @@ path = os.path.abspath(pathname)
 # dimensions of our images.
 img_width, img_height = 150, 150
 
-top_model_weights_path = 'model.h5'
+top_model_weights_path = 'model.weights.h5'
 train_data_dir = os.path.join('data', 'train')
 validation_data_dir = os.path.join('data', 'validation')
 cats_train_path = os.path.join(path, train_data_dir, 'cats')
@@ -79,7 +79,7 @@ def save_bottlebeck_features():
         batch_size=batch_size,
         class_mode=None,
         shuffle=False)
-    bottleneck_features_train = model.predict_generator(
+    bottleneck_features_train = model.predict(
         generator, nb_train_samples // batch_size)
     np.save(open('bottleneck_features_train.npy', 'wb'),
             bottleneck_features_train)
@@ -90,7 +90,7 @@ def save_bottlebeck_features():
         batch_size=batch_size,
         class_mode=None,
         shuffle=False)
-    bottleneck_features_validation = model.predict_generator(
+    bottleneck_features_validation = model.predict(
         generator, nb_validation_samples // batch_size)
     np.save(open('bottleneck_features_validation.npy', 'wb'),
             bottleneck_features_validation)
