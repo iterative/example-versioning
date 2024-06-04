@@ -55,7 +55,7 @@ path = os.path.abspath(pathname)
 # dimensions of our images.
 img_width, img_height = 150, 150
 
-top_model_weights_path = 'model.h5'
+top_model_weights_path = 'model.weights.h5'
 train_data_dir = os.path.join('data', 'train')
 validation_data_dir = os.path.join('data', 'validation')
 cats_train_path = os.path.join(path, train_data_dir, 'cats')
